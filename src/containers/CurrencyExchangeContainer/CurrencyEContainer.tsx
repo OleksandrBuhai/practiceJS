@@ -1,27 +1,35 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import CurrencyExchange from '../../components/CurrencyExchange/CurrencyExchange';
-import { CurrencyState, CurrencyType } from '../../redux/currencyReducer';
-import { Dispatch } from 'redux';
 import {
     ChangeActionAC,
     ChangeCurrencyFieldAC,
-    СhangeCurrentCurrencyAC,
-    CurrencyReducersTypes
+    СhangeCurrentCurrencyAC
 } from '../../redux/actions';
-import { connect, ConnectedProps } from 'react-redux';
+import { CurrencyState, CurrencyType } from '../../redux/currencyReducer';
 
-const CurrencyEContainer: React.FC<TProps> = props => {
 
-    const {
-        currencies,
-        currentCurrency,
-        isBuying,
-        amountOfBYN,
-        amountOfCurrency,
-        setCurrencyAmount,
-        setAction,
-        changeCurrency,
-    } = props;
+const CurrencyEContainer: React.FC = () => {
+
+    const dispatch = useDispatch();
+    const currencies = useSelector((state: { currency: CurrencyState }) => state.currency.currencies);
+    const currentCurrency = useSelector((state: { currency: CurrencyState }) => state.currency.currentCurrency);
+    const isBuying = useSelector((state: { currency: CurrencyState }) => state.currency.isBuying);
+    const amountOfBYN = useSelector((state: { currency: CurrencyState }) => state.currency.amountOfBYN);
+    const amountOfCurrency = useSelector((state: { currency: CurrencyState }) => state.currency.amountOfCurrency);
+
+    const setCurrencyAmount = (amountOfBYN: string, amountOfCurrency: string) => {
+        dispatch(ChangeCurrencyFieldAC(amountOfBYN, amountOfCurrency));
+    }
+
+    const setAction = (isBuying: boolean) => {
+        dispatch(ChangeActionAC(isBuying));
+    }
+
+    const changeCurrency = (currency: string) => {
+        dispatch(СhangeCurrentCurrencyAC(currency));
+    }
+
 
     let currencyRate: number = 0;
     const currenciesName = currencies.map((currency: CurrencyType) => {
@@ -76,35 +84,6 @@ const CurrencyEContainer: React.FC<TProps> = props => {
     );
 };
 
-const mapStateToProps = ( { currency } : {currency: CurrencyState} ): CurrencyState => {
-    return {
-        currencies: currency.currencies,
-        currentCurrency: currency.currentCurrency,
-        isBuying: currency.isBuying,
-        amountOfBYN: currency.amountOfBYN,
-        amountOfCurrency: currency.amountOfCurrency,
-    };
-};
 
-// @ts-ignore
-const mapDispatchToProps = (dispatch: Dispatch<CurrencyReducersTypes>) : any => {
-    return {
-        setCurrencyAmount(amountOfBYN: string, amountOfCurrency: string) {
-            dispatch(ChangeCurrencyFieldAC(amountOfBYN, amountOfCurrency));
-        },
-        setAction(isBuying: boolean) {
-            dispatch(ChangeActionAC(isBuying));
-        },
-        changeCurrency(currency: string) {
-            dispatch(СhangeCurrentCurrencyAC(currency));
-        },
-    };
-};
-
-// @ts-ignore
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
-type TProps = ConnectedProps<typeof connector>;
-
-export default connector(CurrencyEContainer);
+export default CurrencyEContainer;
 
